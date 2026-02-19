@@ -6,30 +6,13 @@
     <title>Monitora DOM - Conceição do Araguaia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ... outros estilos que já estão aí ... */
-    
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-            font-size: 13px;
-            line-height: 1.8;
+        :root {
+            --primary: #003366;
+            --secondary: #00509d;
+            --accent: #ffcc00;
+            --bg: #f4f7f9;
+            --text: #333;
         }
-    
-        .km-link { 
-            font-weight: 700; 
-            color: var(--primary); 
-            text-decoration: none;
-            font-size: 16px;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-    
-        .km-link:hover {
-            color: var(--secondary);
-            text-decoration: underline;
-        }
-    </style>
 
         body { 
             font-family: 'Inter', sans-serif; 
@@ -111,17 +94,29 @@
             text-transform: uppercase;
         }
 
+        /* ESTILO DO RODAPÉ ATUALIZADO */
         footer {
             text-align: center;
             padding: 30px;
             color: #777;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
-        .km-logo { font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px; }
+        .km-link { 
+            font-weight: 700; 
+            color: var(--primary); 
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
 
-        /* Mensagens de Estado */
+        .km-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
         .status-msg {
             text-align: center;
             padding: 60px 20px;
@@ -130,9 +125,8 @@
 
         .error-msg { color: #d9534f; font-weight: bold; }
 
-        /* Estilo para a imagem de busca */
         .search-image {
-            max-width: 250px; /* Ajuste o tamanho conforme necessário */
+            max-width: 250px;
             height: auto;
             margin-top: 30px;
             border-radius: 8px;
@@ -166,69 +160,3 @@
             try {
                 const timestamp = new Date().getTime();
                 const response = await fetch('./dados.json?v=' + timestamp);
-                
-                if (!response.ok) {
-                    throw new Error("Arquivo não encontrado");
-                }
-
-                const data = await response.json();
-
-                if (Object.keys(data).length === 0) {
-                    display.innerHTML = `
-                        <div class="status-msg">
-                            <span style="font-size: 28px; font-weight: 700; color: var(--primary);">Márcio "O Fiscal do Povo"</span><br>
-                            <span style="font-size: 18px; color: #555;">Trabalhando em Prol da Transparência de CDA.</span><br><br>
-                            <span style="font-size: 16px; color: #777;">Aguardando as publicações do Diário Oficial.</span>
-                            <br>
-                            <img src="https://cdamarcio.github.io/Monitora/search_data.png" alt="Símbolo de busca de dados" class="search-image">
-                        </div>`;
-                    return;
-                }
-
-                display.innerHTML = ''; // Limpa o carregando
-
-                for (const path in data) {
-                    const secao = document.createElement('div');
-                    secao.className = 'secao-data';
-                    
-                    const tituloData = path.replace('publicacoes/', '');
-                    
-                    secao.innerHTML = `
-                        <div class="data-header">📅 DATA: ${tituloData}</div>
-                        <div class="lista-arquivos" id="lista-${path.replace(/\//g, '-')}"></div>
-                    `;
-                    display.appendChild(secao);
-
-                    const lista = secao.querySelector('.lista-arquivos');
-
-                    data[path].forEach(arquivo => {
-                        const link = document.createElement('a');
-                        link.className = 'arquivo-item';
-                        link.href = `${path}/${arquivo}`;
-                        link.target = "_blank";
-                        link.innerHTML = `
-                            <span class="file-icon">📕</span>
-                            <span>${arquivo}</span>
-                            <span class="btn-view">Abrir PDF</span>
-                        `;
-                        lista.appendChild(link);
-                    });
-                }
-
-            } catch (err) {
-                console.error(err);
-                display.innerHTML = `
-                    <div class="status-msg">
-                        <span class="error-msg" style="font-size: 40px;">⚠️</span><br><br>
-                        <span class="error-msg">SISTEMA EM SINCRONIZAÇÃO</span><br>
-                        O banco de dados está sendo gerado pelo robô.<br>
-                        <small>Aguarde 2 minutos e atualize a página.</small>
-                    </div>`;
-            }
-        }
-
-        // Executa a função ao carregar a página
-        carregarDados();
-    </script>
-</body>
-</html>
