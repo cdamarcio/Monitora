@@ -1,43 +1,38 @@
-import os
-import requests
-import json
-from datetime import datetime, timedelta
+import os, requests, json
+from datetime import datetime
 
-ENTIDADE_ID = "28642" # Conceição do Araguaia
+ENTIDADE_ID = "28642" # CDA
 URL_BASE = "https://www.diariomunicipal.com.br/famep/pesquisar"
 
-def executar_monitor():
+def executar():
     hoje = datetime.now()
-    # BUSCA DOS ÚLTIMOS 15 DIAS PARA POPULAR O SITE
-    data_inicio = (hoje - timedelta(days=15)).strftime("%d/%m/%Y")
-    data_fim = hoje.strftime("%d/%m/%Y")
+    data_str = hoje.strftime('%d/%m/%Y')
+    print(f"Monitorando FAMEP - CDA: {data_str}")
     
-    params = {
-        "busca_avancada[entidadeUsuaria]": ENTIDADE_ID,
-        "busca_avancada[dataInicio]": data_inicio,
-        "busca_avancada[dataFim]": data_fim,
-        "busca_avancada[Enviar]": ""
-    }
+    # Define o caminho da pasta de hoje
+    caminho_dia = f"publicacoes/{hoje.year}/{hoje.strftime('%m')}/{hoje.strftime('%d')}"
+    os.makedirs(caminho_dia, exist_ok=True)
 
-    print(f"Buscando publicações de {data_inicio} ate {data_fim}...")
-    
-    # Criamos uma pasta de log para garantir que o Git veja uma mudança
-    log_path = f"publicacoes/{hoje.year}/{hoje.strftime('%m')}"
-    os.makedirs(log_path, exist_ok=True)
-    with open(f"{log_path}/ultimo_check.txt", "w") as f:
-        f.write(f"Ultima verificacao feita em: {datetime.now()}")
+    # Aqui você pode remover o arquivo de teste se ele existir
+    teste_file = os.path.join(caminho_dia, "ultimo_check.txt")
+    if os.path.exists(teste_file):
+        os.remove(teste_file)
 
-    # Lógica de geração do dados.json
+    # Lógica para atualizar o índice dados.json
     arvore = {}
     if os.path.exists("publicacoes"):
         for root, dirs, files in os.walk("publicacoes"):
-            arquivos = [f for f in files if not f.startswith('.')]
+            # Filtra apenas arquivos úteis (PDFs)
+            arquivos = [f for f in files if f.endswith('.pdf')]
             if arquivos:
-                arvore[root] = arquivos
+                # Ajusta o caminho para o formato do site
+                caminho_formatado = root.replace("\\", "/")
+                arvore[caminho_formatado] = arquivos
                 
-    with open("dados.json", "w") as f:
-        json.dump(arvore, f, indent=4)
-    print("✅ Sistema atualizado com sucesso!")
+    with open("dados.json", "w", encoding="utf-8") as f:
+        json.dump(arvore, f, indent=4, ensure_ascii=False)
+    
+    print("✅ Índice atualizado com sucesso!")
 
 if __name__ == "__main__":
-    executar_monitor()
+    executar()
