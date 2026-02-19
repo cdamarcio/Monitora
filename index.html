@@ -6,13 +6,30 @@
     <title>Monitora DOM - Conceição do Araguaia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #003366;
-            --secondary: #00509d;
-            --accent: #ffcc00;
-            --bg: #f4f7f9;
-            --text: #333;
+        /* ... outros estilos que já estão aí ... */
+    
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-size: 13px;
+            line-height: 1.8;
         }
+    
+        .km-link { 
+            font-weight: 700; 
+            color: var(--primary); 
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+    
+        .km-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+    </style>
 
         body { 
             font-family: 'Inter', sans-serif; 
@@ -137,9 +154,10 @@
     </div>
 
     <footer>
-        <span class="km-logo">KM Engenharia & Tecnologia</span>
-        Responsável: Márcio  - (94) 99250-0073<br>
-        Conceição do Araguaia - Pará | &copy; 2026
+        <a href="https://www.kmprojetos.eng.br/" target="_blank" class="km-link">KM Engenharia & Tecnologia</a><br>
+        Responsável Técnico: Engenheiro Márcio - (94) 99250-0073<br>
+        Conceição do Araguaia - Pará<br>
+        &copy; 2026 KM Engenharia & Tecnologia
     </footer>
 
     <script>
