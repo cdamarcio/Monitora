@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitora DOM - Conceição do Araguaia</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .card { max-width: 800px; margin: auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; }
+        h1 { color: #004a80; border-bottom: 2px solid #004a80; padding-bottom: 10px; }
+        .pasta { background: #e7eff6; padding: 10px; margin-top: 15px; font-weight: bold; border-radius: 4px; color: #333; }
+        .arquivo { display: block; padding: 8px 15px; color: #0056b3; text-decoration: none; border-bottom: 1px solid #eee; }
+        .arquivo:hover { background: #f8f9fa; }
+        footer { text-align: center; margin-top: 30px; font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Monitora DOM - CDA</h1>
+        <div id="lista">Carregando publicações...</div>
+    </div>
+    <footer>Desenvolvido por Márcio Rodrigues de Oliveira - KM PROJETOS</footer>
+
+    <script>
+        fetch('./dados.json?t=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                const lista = document.getElementById('lista');
+                if (Object.keys(data).length === 0) {
+                    lista.innerHTML = "Nenhuma publicação encontrada no momento.";
+                    return;
+                }
+                lista.innerHTML = "";
+                for (const pasta in data) {
+                    const divPasta = document.createElement('div');
+                    divPasta.className = 'pasta';
+                    divPasta.innerText = "📁 " + pasta.replace('publicacoes/', '');
+                    lista.appendChild(divPasta);
+
+                    data[pasta].forEach(arq => {
+                        const a = document.createElement('a');
+                        a.className = 'arquivo';
+                        a.href = `${pasta}/${arq}`;
+                        a.target = "_blank";
+                        a.innerText = "📄 " + arq;
+                        lista.appendChild(a);
+                    });
+                }
+            }).catch(() => {
+                document.getElementById('lista').innerHTML = "Erro ao carregar dados.";
+            });
+    </script>
+</body>
+</html>

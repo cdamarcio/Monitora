@@ -1,0 +1,33 @@
+name: Monitoramento Diario DOM
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 11-20 * * 1-5' # Roda a cada 30 min em horário comercial
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Executar Scraper
+        run: python monitor.py
+
+      - name: Commit e Push dos resultados
+        run: |
+          git config --global user.name "Márcio Oliveira - KM Projetos"
+          git config --global user.email "cda.marcio@gmail.com"
+          git add dados.json publicacoes/
+          git commit -m "Sincronização Automática DOM: $(date +'%d/%m/%Y %H:%M')" || exit 0
+          git push origin HEAD
