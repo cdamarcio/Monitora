@@ -14,13 +14,7 @@
             --text: #333;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); 
-            margin: 0; 
-            padding: 0; 
-            color: var(--text); 
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); }
 
         header {
             background: var(--primary);
@@ -41,96 +35,40 @@
             padding: 30px; 
             border-radius: 12px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            min-height: 300px;
+            min-height: 400px;
         }
 
-        .secao-data {
-            margin-bottom: 25px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
+        .status-msg { text-align: center; padding: 40px 20px; }
+
+        .fiscal-frase { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px; }
+        .fiscal-sub { font-size: 18px; color: #555; display: block; margin-bottom: 20px; }
+        
+        .search-image {
+            max-width: 300px;
+            height: auto;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: block;
         }
 
-        .data-header {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            font-weight: 700;
-            color: var(--primary);
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-        }
-
-        .lista-arquivos { padding: 10px; }
-
+        .secao-data { margin-bottom: 25px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+        .data-header { background: #f8f9fa; padding: 15px 20px; font-weight: 700; color: var(--primary); border-bottom: 1px solid #eee; }
+        
         .arquivo-item {
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            margin: 5px 0;
             text-decoration: none;
             color: #444;
-            border-radius: 6px;
+            border-bottom: 1px solid #f0f0f0;
             transition: 0.2s;
-            border: 1px solid transparent;
         }
 
-        .arquivo-item:hover {
-            background-color: #f0f7ff;
-            border-color: var(--secondary);
-            transform: translateX(5px);
-        }
+        .arquivo-item:hover { background-color: #f0f7ff; }
 
-        .file-icon { margin-right: 15px; font-size: 20px; }
-
-        .btn-view {
-            margin-left: auto;
-            background: var(--secondary);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-            font-size: 13px;
-            line-height: 1.8;
-        }
-
-        .km-link { 
-            font-weight: 700; 
-            color: var(--primary); 
-            text-decoration: none;
-            font-size: 16px;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-
-        .km-link:hover {
-            color: var(--secondary);
-            text-decoration: underline;
-        }
-
-        .status-msg {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
-        }
-
-        .error-msg { color: #d9534f; font-weight: bold; }
-
-        .search-image {
-            max-width: 250px;
-            height: auto;
-            margin-top: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        footer { text-align: center; padding: 30px; color: #777; font-size: 13px; line-height: 1.8; }
+        .km-link { font-weight: 700; color: var(--primary); text-decoration: none; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -142,80 +80,56 @@
 
     <div class="container">
         <div id="conteudo">
-            <div class="status-msg">Iniciando conexão com o servidor de dados...</div>
-        </div>
+            </div>
     </div>
 
     <footer>
         <a href="https://www.kmprojetos.eng.br/" target="_blank" class="km-link">KM Engenharia & Tecnologia</a><br>
-        Contato: (94) 99250-0073<br>
+        Responsável Técnico: Engenheiro Márcio - (94) 99250-0073<br>
         Conceição do Araguaia - Pará<br>
         &copy; 2026 KM Engenharia & Tecnologia
     </footer>
 
     <script>
+        const MENSAGEM_FISCAL = `
+            <div class="status-msg">
+                <span class="fiscal-frase">Márcio "O Fiscal do Povo"</span>
+                <span class="fiscal-sub">Trabalhando em Prol da Transparência de CDA.</span>
+                <img src="search_data.png" alt="Buscando dados..." class="search-image">
+                <p style="color: #888;">Aguardando novas publicações do Diário Oficial...</p>
+            </div>
+        `;
+
         async function carregarDados() {
             const display = document.getElementById('conteudo');
             try {
-                const timestamp = new Date().getTime();
-                const response = await fetch('./dados.json?v=' + timestamp);
-                
-                if (!response.ok) {
-                    throw new Error("Arquivo não encontrado");
-                }
-
+                const response = await fetch('./dados.json?v=' + new Date().getTime());
                 const data = await response.json();
 
-                // VISUAL DO FISCAL DO POVO ATIVADO
                 if (Object.keys(data).length === 0) {
-                    display.innerHTML = `
-                        <div class="status-msg">
-                            <span style="font-size: 28px; font-weight: 700; color: var(--primary);">Márcio "O Fiscal do Povo"</span><br>
-                            <span style="font-size: 18px; color: #555;">Trabalhando em Prol da Transparência de CDA.</span><br><br>
-                            <span style="font-size: 16px; color: #777;">Aguardando as publicações do Diário Oficial.</span>
-                            <br>
-                            <img src="search_data.png" alt="Símbolo de busca de dados" class="search-image">
-                        </div>`;
+                    display.innerHTML = MENSAGEM_FISCAL;
                     return;
                 }
 
                 display.innerHTML = ''; 
-
                 for (const path in data) {
                     const secao = document.createElement('div');
                     secao.className = 'secao-data';
-                    const tituloData = path.replace('publicacoes/', '');
+                    secao.innerHTML = `<div class="data-header">📅 DATA: ${path.replace('publicacoes/', '')}</div>`;
                     
-                    secao.innerHTML = `
-                        <div class="data-header">📅 DATA: ${tituloData}</div>
-                        <div class="lista-arquivos" id="lista-${path.replace(/\//g, '-')}"></div>
-                    `;
-                    display.appendChild(secao);
-
-                    const lista = secao.querySelector('.lista-arquivos');
-                    data[path].forEach(arquivo => {
-                        const link = document.createElement('a');
-                        link.className = 'arquivo-item';
-                        link.href = `${path}/${arquivo}`;
-                        link.target = "_blank";
-                        link.innerHTML = `
-                            <span class="file-icon">📕</span>
-                            <span>${arquivo}</span>
-                            <span class="btn-view">Abrir PDF</span>
-                        `;
-                        lista.appendChild(link);
+                    const lista = document.createElement('div');
+                    data[path].forEach(arq => {
+                        lista.innerHTML += `
+                            <a href="${path}/${arq}" target="_blank" class="arquivo-item">
+                                <span style="margin-right:10px;">📕</span> ${arq}
+                            </a>`;
                     });
+                    secao.appendChild(lista);
+                    display.appendChild(secao);
                 }
-
             } catch (err) {
-                console.error(err);
-                display.innerHTML = `
-                    <div class="status-msg">
-                        <span class="error-msg" style="font-size: 40px;">⚠️</span><br><br>
-                        <span class="error-msg">SISTEMA EM SINCRONIZAÇÃO</span><br>
-                        O banco de dados está sendo gerado pelo robô.<br>
-                        <small>Aguarde 2 minutos e atualize a página.</small>
-                    </div>`;
+                // SE DER ERRO (BANCO NÃO EXISTE AINDA), MOSTRA A FRASE TAMBÉM!
+                display.innerHTML = MENSAGEM_FISCAL;
             }
         }
         carregarDados();
