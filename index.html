@@ -35,7 +35,7 @@
             padding: 30px; 
             border-radius: 12px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            min-height: 400px;
+            min-height: 450px;
         }
 
         .status-msg { text-align: center; padding: 40px 20px; }
@@ -43,13 +43,45 @@
         .fiscal-frase { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px; }
         .fiscal-sub { font-size: 18px; color: #555; display: block; margin-bottom: 20px; }
         
-        .search-image {
-            max-width: 300px;
-            height: auto;
+        /* CONTAINER DA ANIMAÇÃO */
+        .search-wrapper {
+            position: relative;
+            display: inline-block;
             margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .search-image {
+            max-width: 280px;
+            height: auto;
             display: block;
+            /* Animação de pulsar */
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        /* Efeito de Scanner (Brilho passando) */
+        .search-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 150%; }
         }
 
         .secao-data { margin-bottom: 25px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
@@ -58,17 +90,18 @@
         .arquivo-item {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 15px 20px;
             text-decoration: none;
             color: #444;
             border-bottom: 1px solid #f0f0f0;
             transition: 0.2s;
         }
 
-        .arquivo-item:hover { background-color: #f0f7ff; }
+        .arquivo-item:hover { background-color: #f0f7ff; padding-left: 25px; }
 
-        footer { text-align: center; padding: 30px; color: #777; font-size: 13px; line-height: 1.8; }
+        footer { text-align: center; padding: 30px; color: #777; font-size: 13px; line-height: 1.8; border-top: 1px solid #eee; }
         .km-link { font-weight: 700; color: var(--primary); text-decoration: none; font-size: 16px; }
+        .km-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -91,47 +124,59 @@
     </footer>
 
     <script>
-        const MENSAGEM_FISCAL = `
+        // HTML da mensagem de busca animada
+        const HTML_BUSCANDO = `
             <div class="status-msg">
                 <span class="fiscal-frase">Márcio "O Fiscal do Povo"</span>
                 <span class="fiscal-sub">Trabalhando em Prol da Transparência de CDA.</span>
-                <img src="https://raw.githubusercontent.com/cdamarcio/Monitora/main/search_data.png" alt="Buscando dados..." class="search-image" onerror="this.src='https://img.icons8.com/clouds/200/search-property.png'">
-                <p style="color: #888;">Aguardando novas publicações do Diário Oficial...</p>
+                <div class="search-wrapper">
+                    <img src="search_data.png" alt="Buscando dados..." class="search-image" onerror="this.src='https://img.icons8.com/clouds/200/search-property.png'">
+                </div>
+                <p style="color: #888; margin-top: 20px; font-style: italic;">Sincronizando com o portal FAMEP... Aguarde novas publicações.</p>
             </div>
         `;
 
         async function carregarDados() {
             const display = document.getElementById('conteudo');
             try {
+                // Adicionamos um timestamp para evitar cache do navegador
                 const response = await fetch('./dados.json?v=' + new Date().getTime());
+                if (!response.ok) throw new Error();
+
                 const data = await response.json();
 
                 if (Object.keys(data).length === 0) {
-                    display.innerHTML = MENSAGEM_FISCAL;
+                    display.innerHTML = HTML_BUSCANDO;
                     return;
                 }
 
                 display.innerHTML = ''; 
-                for (const path in data) {
+                // Ordenar datas (mais recentes primeiro)
+                const datasOrdenadas = Object.keys(data).sort().reverse();
+
+                for (const path of datasOrdenadas) {
                     const secao = document.createElement('div');
                     secao.className = 'secao-data';
-                    secao.innerHTML = `<div class="data-header">📅 DATA: ${path.replace('publicacoes/', '')}</div>`;
+                    secao.innerHTML = `<div class="data-header">📅 DATA: ${path.split('/').pop()} / ${path.split('/')[2]}</div>`;
                     
                     const lista = document.createElement('div');
                     data[path].forEach(arq => {
                         lista.innerHTML += `
                             <a href="${path}/${arq}" target="_blank" class="arquivo-item">
-                                <span style="margin-right:10px;">📕</span> ${arq}
+                                <span style="margin-right:15px; font-size: 20px;">📕</span> 
+                                <strong>${arq}</strong>
+                                <span style="margin-left: auto; font-size: 11px; background: #eee; padding: 2px 8px; border-radius: 10px;">Visualizar</span>
                             </a>`;
                     });
                     secao.appendChild(lista);
                     display.appendChild(secao);
                 }
             } catch (err) {
-                // SE DER ERRO (BANCO NÃO EXISTE AINDA), MOSTRA A FRASE TAMBÉM!
-                display.innerHTML = MENSAGEM_FISCAL;
+                // Se o arquivo dados.json não existir ou falhar, mostra o Fiscal do Povo
+                display.innerHTML = HTML_BUSCANDO;
             }
         }
+
         carregarDados();
     </script>
 </body>
