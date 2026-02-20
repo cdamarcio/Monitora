@@ -2,182 +2,45 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitora DOM - Conceição do Araguaia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Monitora DOM - KM Engenharia</title>
     <style>
-        :root {
-            --primary: #003366;
-            --secondary: #00509d;
-            --accent: #ffcc00;
-            --bg: #f4f7f9;
-            --text: #333;
-        }
-
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); }
-
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 5px solid var(--accent);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        header h1 { margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 1px; }
-        header p { margin: 10px 0 0; opacity: 0.9; font-weight: 300; }
-
-        .container { 
-            max-width: 900px; 
-            margin: -30px auto 50px; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            min-height: 450px;
-        }
-
-        .status-msg { text-align: center; padding: 40px 20px; }
-
-        .fiscal-frase { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px; }
-        .fiscal-sub { font-size: 18px; color: #555; display: block; margin-bottom: 20px; }
-        
-        /* CONTAINER DA ANIMAÇÃO */
-        .search-wrapper {
-            position: relative;
-            display: inline-block;
-            margin: 20px auto;
-            overflow: hidden;
-            border-radius: 15px;
-        }
-
-        .search-image {
-            max-width: 280px;
-            height: auto;
-            display: block;
-            /* Animação de pulsar */
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        /* Efeito de Scanner (Brilho passando) */
-        .search-wrapper::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            animation: scan 3s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 150%; }
-        }
-
-        .secao-data { margin-bottom: 25px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
-        .data-header { background: #f8f9fa; padding: 15px 20px; font-weight: 700; color: var(--primary); border-bottom: 1px solid #eee; }
-        
-        .arquivo-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            text-decoration: none;
-            color: #444;
-            border-bottom: 1px solid #f0f0f0;
-            transition: 0.2s;
-        }
-
-        .arquivo-item:hover { background-color: #f0f7ff; padding-left: 25px; }
-
-        footer { text-align: center; padding: 30px; color: #777; font-size: 13px; line-height: 1.8; border-top: 1px solid #eee; }
-        .km-link { font-weight: 700; color: var(--primary); text-decoration: none; font-size: 16px; }
-        .km-link:hover { text-decoration: underline; }
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .card { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #2c3e50; }
+        h1 { color: #2c3e50; text-align: center; }
+        .item { padding: 15px; margin: 10px 0; border-radius: 6px; border: 1px solid #ddd; }
+        /* COR QUANDO ACHAR PDF REAL */
+        .novo { background: #e8f5e9; border-left: 6px solid #27ae60; animation: pulse 2s infinite; }
+        /* COR QUANDO ESTIVER VAZIO */
+        .vazio { background: #fff; border-left: 6px solid #bdc3c7; }
+        a { text-decoration: none; color: #2980b9; font-weight: bold; font-size: 1.1em; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>Monitoramento DOM - CDA</h1>
-        <p>Sistema de Transparência Pública</p>
-    </header>
-
-    <div class="container">
-        <div id="conteudo">
-            </div>
+    <div class="card">
+        <h1>KM Engenharia</h1>
+        <p style="text-align:center">Fiscalização Diário Oficial - CDA</p>
+        <div id="conteudo">Buscando atualizações...</div>
     </div>
 
-    <footer>
-        <a href="https://www.kmprojetos.eng.br/" target="_blank" class="km-link">KM Engenharia & Tecnologia</a><br>
-        Responsável Técnico: Engenheiro Márcio - (94) 99250-0073<br>
-        Conceição do Araguaia - Pará<br>
-        &copy; 2026 KM Engenharia & Tecnologia
-    </footer>
-
     <script>
-        // HTML da mensagem de busca animada
-        const HTML_BUSCANDO = `
-            <div class="status-msg">
-                <span class="fiscal-frase">Márcio "O Fiscal do Povo"</span>
-                <span class="fiscal-sub">Trabalhando em Prol da Transparência de CDA.</span>
-                <div class="search-wrapper">
-                    <img src="search_data.png" alt="Buscando dados..." class="search-image" onerror="this.src='https://img.icons8.com/clouds/200/search-property.png'">
-                </div>
-                <p style="color: #888; margin-top: 20px; font-style: italic;">Sincronizando com o portal FAMEP... Aguarde novas publicações.</p>
-            </div>
-        `;
+        async function carregar() {
+            const res = await fetch('https://raw.githubusercontent.com/cdamarcio/Monitora/main/dados.json?t=' + Date.now());
+            const data = await res.json();
+            const div = document.getElementById('conteudo');
+            div.innerHTML = '';
 
-        async function carregarDados() {
-            const display = document.getElementById('conteudo');
-            try {
-                // Adicionamos um timestamp para evitar cache do navegador
-                const response = await fetch('./dados.json?v=' + new Date().getTime());
-                if (!response.ok) throw new Error();
-
-                const data = await response.json();
-
-                if (Object.keys(data).length === 0) {
-                    display.innerHTML = HTML_BUSCANDO;
-                    return;
-                }
-
-                display.innerHTML = ''; 
-                // Ordenar datas (mais recentes primeiro)
-                const datasOrdenadas = Object.keys(data).sort().reverse();
-
-                for (const path of datasOrdenadas) {
-                    const secao = document.createElement('div');
-                    secao.className = 'secao-data';
-                    secao.innerHTML = `<div class="data-header">📅 DATA: ${path.split('/').pop()} / ${path.split('/')[2]}</div>`;
-                    
-                    const lista = document.createElement('div');
-                    data[path].forEach(arq => {
-                        lista.innerHTML += `
-                            <a href="${path}/${arq}" target="_blank" class="arquivo-item">
-                                <span style="margin-right:15px; font-size: 20px;">📕</span> 
-                                <strong>${arq}</strong>
-                                <span style="margin-left: auto; font-size: 11px; background: #eee; padding: 2px 8px; border-radius: 10px;">Visualizar</span>
-                            </a>`;
-                    });
-                    secao.appendChild(lista);
-                    display.appendChild(secao);
-                }
-            } catch (err) {
-                // Se o arquivo dados.json não existir ou falhar, mostra o Fiscal do Povo
-                display.innerHTML = HTML_BUSCANDO;
+            for (let mes in data) {
+                data[mes].forEach(item => {
+                    const classe = item.novo ? 'novo' : 'vazio';
+                    div.innerHTML += `
+                        <div class="item ${classe}">
+                            <a href="${item.url}" target="_blank">${item.nome}</a>
+                        </div>`;
+                });
             }
         }
-
-        carregarDados();
+        carregar();
     </script>
 </body>
 </html>
